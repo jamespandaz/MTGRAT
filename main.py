@@ -1,7 +1,6 @@
 # This example requires the 'members' and 'message_content' privileged intents to function.
 import discord
 from discord.ext import commands
-import random
 import yaml
 import elo
 
@@ -15,7 +14,7 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', description=description, intents=intents)
 ## -- VARIABLES INIT PROB A BAD IDEA -- ## 
-playerList = [] # intiallise player list (hope you dont have to restart the bot!!!
+playerList = [] # intiallise player list (hope you dont have to restart the bot!!!)
 match = elo.ELOMatch()
 matchPlayers = 0
 
@@ -29,23 +28,28 @@ class Player:
 ## -- ACUTAL FUNCTIONS FOR COMMANDS -- ##
 def reportGame(player, place, playerList):
     for each in playerList:
-        if player.id == each.userID:
+        if player == each.userID:
             match.addPlayer(each.username, place, each.elo)
             print(each)
 
 def addPlayer(player, playerList):
     playerList.append(Player(player.id, player.name, 1500))
 
-def endGame(match, ctx):
+def endGame(ctx, match):
     message = ''
     match.calculateELOs()
     for each in match.players:
-        each.getELO(each.name)
         message += each.name
         message += " has had an ELO change of: "
-        message += each.getELOChange(each.name)
+        message += str(match.getELOChange(each.name))
         message += "\n"
-    ctx.send()
+
+    for currentPlayers in match.players:
+        for each in playerList:
+            if currentPlayers.name == each.username:
+                each.elo = match.getELO(currentPlayers.name)
+    
+    ctx.send(message)
         
 
 @bot.event
@@ -53,7 +57,7 @@ async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
     print('------')
 
-
+## -- COMMANDS -- ##
 @bot.command()
 async def addplayer(ctx):
     addPlayer(ctx.author, playerList)
@@ -68,6 +72,11 @@ async def leaderboard(ctx):
         playerListMessage += "\n"
     
     await ctx.send(playerListMessage)
+
+@bot.command()
+async def bozo(ctx):
+   await ctx.send("Jack has been selected as the Bozo!!!! :D")
+
 @bot.command()
 async def startgame(ctx):
     match = elo.ELOMatch()
@@ -75,11 +84,15 @@ async def startgame(ctx):
 
 @bot.command()
 async def reportgame(ctx, place):
-    if matchPlayers == 1: ## TODO FIRST TIME FIX VARIABLE
-        endGame(match, ctx)
-    else:
-        reportGame(ctx.author, place, playerList)
-        await ctx.send(ctx.author.name + " has reported " + place)
-        matchPlayers += 1
+    print(ctx.author)
+    reportGame(ctx.author.id, place, playerList)
+    await ctx.send(ctx.author.name + " has reported " + place)
+
+@bot.command()
+async def endgame(ctx):
+    endGame(ctx, match)
+    await ctx.send("Game has been ended! f10 + n noob!")
+
+
 
 bot.run(token['BOT_TOKEN'])
