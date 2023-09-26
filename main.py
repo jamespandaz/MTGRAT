@@ -1,8 +1,12 @@
 import discord
 import elo
 import logging
+import yaml
 
 def main():
+    with open('config.yml', 'r') as file:
+        token = yaml.safe_load(file)
+
     playerList = [] # intiallise player list (hope you dont have to restart the bot!!!
     class Player:
         def __init__(self, userID, username, elo):
@@ -50,7 +54,7 @@ def main():
 
     client = MyClient(intents=intents)
     handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-    client.run('MTE1NTgyNjA5MTk3NDQ3NTgzNg.G3hB9g.9wXTr2Ld4eqo2oJcejQ0AN3vgJ88HlcM6wQH3o', log_handler=handler)
+    client.run(token['BOT_TOKEN'], log_handler=handler)
 
 def addPlayer(player, playerList):
     playerList.append(player)
