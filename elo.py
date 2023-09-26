@@ -13,6 +13,9 @@ class ELOMatch:
     def __init__(self):
         self.players = []
     
+    def clearMatch(self):
+        self.players = []
+    
     def addPlayer(self, name, place, elo):
         player = ELOPlayer()
         
@@ -38,7 +41,7 @@ class ELOMatch:
  
     def calculateELOs(self):
         n = len(self.players)
-        K = 32 / (n - 1)
+        K = 32 / (n - 1) #where the two is make sure to change it back to n
         for player in self.players:
             curPlace = player.place
             curELO   = player.eloPre

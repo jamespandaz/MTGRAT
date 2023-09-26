@@ -17,6 +17,8 @@ bot = commands.Bot(command_prefix='!', description=description, intents=intents)
 playerList = [] # intiallise player list (hope you dont have to restart the bot!!!)
 match = elo.ELOMatch()
 matchPlayers = 0
+gameStartTime = 0
+gameEndTime = 0
 
 # -- PLAYER CLASS -- ##
 class Player:
@@ -26,7 +28,7 @@ class Player:
         self.elo = elo
 
 ## -- ACUTAL FUNCTIONS FOR COMMANDS -- ##
-def reportGame(player, place, playerList):
+def reportPlacing(player, place, playerList):
     for each in playerList:
         if player == each.userID:
             match.addPlayer(each.username, place, each.elo)
@@ -49,7 +51,7 @@ def endGame(ctx, match):
             if currentPlayers.name == each.username:
                 each.elo = match.getELO(currentPlayers.name)
     
-    ctx.send(message)
+    return message
         
 
 @bot.event
@@ -59,15 +61,20 @@ async def on_ready():
 
 ## -- COMMANDS -- ##
 @bot.command()
-async def addplayer(ctx):
+async def register(ctx):
     addPlayer(ctx.author, playerList)
     await ctx.send(ctx.author.name + ' has been added to the leaderboard!')
 
 @bot.command()
 async def leaderboard(ctx):
+    leaderboard = sorted(playerList, key=lambda x: x.elo, reverse=True)
     playerListMessage = ''
-    for each in playerList:
+    playerRanking = 1
+    for each in leaderboard:
+        playerListMessage += str(playerRanking)
+        playerListMessage += ". "
         playerListMessage += each.username
+        playerListMessage += " | ELO:  "
         playerListMessage += str(each.elo)
         playerListMessage += "\n"
     
@@ -83,16 +90,26 @@ async def startgame(ctx):
     await ctx.send("Game has been started! Have fun (I don't recall saying good luck)")
 
 @bot.command()
-async def reportgame(ctx, place):
+async def reportplacing(ctx, place):
     print(ctx.author)
-    reportGame(ctx.author.id, place, playerList)
+    reportPlacing(ctx.author.id, place, playerList)
     await ctx.send(ctx.author.name + " has reported " + place)
 
 @bot.command()
 async def endgame(ctx):
-    endGame(ctx, match)
+    await ctx.send(endGame(ctx, match))
+    match.clearMatch()
     await ctx.send("Game has been ended! f10 + n noob!")
+    await ctx.send("Game took: " + str((gameEndTime - gameStartTime)*60) + " minutes to complete")
 
-
+@bot.command()
+async def helpmeratman(ctx):
+    await ctx.send("\
+1. run !register to register yourself to the leaderboard (only need to do this once) \n \
+2. run !startgame to start a game (only one person needs to do this) \n \
+3. run !reportplacing <place> to report your place in the game (eg. !reportgame 2 to report 2nd place) \n \
+4. run !endgame to end the game and update the leaderboard (only one person needs to run this) \n \
+Use !bozo to select a bozo \n \
+Use !leaderboard to see the leaderboard \n")
 
 bot.run(token['BOT_TOKEN'])
