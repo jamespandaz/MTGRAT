@@ -41,7 +41,7 @@ def endGame(ctx, match):
     message = ''
     match.calculateELOs()
     for each in match.players:
-        message += each.name
+        message += str(ctx.guild.get_member_named(each.name).mention)
         message += " has had an ELO change of: "
         message += str(match.getELOChange(each.name))
         message += "\n"
@@ -73,7 +73,7 @@ async def leaderboard(ctx):
     for each in leaderboard:
         playerListMessage += str(playerRanking)
         playerListMessage += ". "
-        playerListMessage += each.username
+        playerListMessage += str(ctx.guild.get_member_named(each.username).global_name)
         playerListMessage += " | ELO:  "
         playerListMessage += str(each.elo)
         playerListMessage += "\n"
@@ -100,7 +100,10 @@ async def endgame(ctx):
     await ctx.send(endGame(ctx, match))
     match.clearMatch()
     await ctx.send("Game has been ended! f10 + n noob!")
-    await ctx.send("Game took: " + str((gameEndTime - gameStartTime)*60) + " minutes to complete")
+
+@bot.command()
+async def yourmum(ctx):
+    await ctx.send("https://media.tenor.com/usLxd9BU6ugAAAAM/walmuartdiscord.gif")
 
 @bot.command()
 async def helpmeratman(ctx):
@@ -112,4 +115,4 @@ async def helpmeratman(ctx):
 Use !bozo to select a bozo \n \
 Use !leaderboard to see the leaderboard \n")
 
-bot.run(token['BOT_TOKEN'])
+bot.run(token['DEV_BOT_TOKEN'])
