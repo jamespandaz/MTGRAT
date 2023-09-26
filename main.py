@@ -1,62 +1,85 @@
+# This example requires the 'members' and 'message_content' privileged intents to function.
 import discord
-import elo
-import logging
+from discord.ext import commands
+import random
 import yaml
+import elo
 
-def main():
-    with open('config.yml', 'r') as file:
-        token = yaml.safe_load(file)
+description = '''Magic The Gathering: Ranking Automation Tool Bot (MTGRAT Bot)'''
 
-    playerList = [] # intiallise player list (hope you dont have to restart the bot!!!
-    class Player:
-        def __init__(self, userID, username, elo):
-            self.username = username
-            self.userID = userID
-            self.elo = elo
+with open('config.yml', 'r') as file:
+    token = yaml.safe_load(file)
+intents = discord.Intents.default()
+intents.members = True
+intents.message_content = True
 
-    class MyClient(discord.Client):
-         
+bot = commands.Bot(command_prefix='!', description=description, intents=intents)
+## -- VARIABLES INIT PROB A BAD IDEA -- ## 
+playerList = [] # intiallise player list (hope you dont have to restart the bot!!!
+match = elo.ELOMatch()
+matchPlayers = 0
 
-        async def on_ready(self): # logs in and then prints that its gucci to run
-            print(f'Logged on as {self.user}!')
+# -- PLAYER CLASS -- ##
+class Player:
+    def __init__(self, userID, username, elo):
+        self.username = username
+        self.userID = userID
+        self.elo = elo
 
-        async def on_message(self, message): # what happens on a message
-            print(f'Message from {message.author}: {message.content}')
-
-            if message.author.id == self.user.id: # bot cant trigger itself and cause spam
-                return
-            
-            match message.content: # match message content to a command
-                case '!addplayer':
-                    addPlayer(message.author, playerList)
-                    print(playerList)
-                    await message.channel.send(message.author.name + 'has been added to the leaderboard!')
-                    playerList.append(Player(message.author.id, message.author.name, 1500))
-
-                case '!playerlist':
-                    playerListMessage = ''
-                    for each in playerList:
-                        playerListMessage += each.name
-                        playerListMessage += "\n"
-                    await message.channel.send(playerListMessage)
-                
-                case '!mystats':
-                    if message.author.id in playerList.Player.userID:
-                        await message.channel.send()
-
-                case _:
-                    pass
-
-    intents = discord.Intents.default() ## intents which idk what really does but i guess we will find out
-    intents.message_content = True
-    intents.typing = False
-    intents.presences = False
-
-    client = MyClient(intents=intents)
-    handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-    client.run(token['BOT_TOKEN'], log_handler=handler)
+## -- ACUTAL FUNCTIONS FOR COMMANDS -- ##
+def reportGame(player, place, playerList):
+    for each in playerList:
+        if player.id == each.userID:
+            match.addPlayer(each.username, place, each.elo)
+            print(each)
 
 def addPlayer(player, playerList):
-    playerList.append(player)
+    playerList.append(Player(player.id, player.name, 1500))
 
-main()
+def endGame(match, ctx):
+    message = ''
+    match.calculateELOs()
+    for each in match.players:
+        each.getELO(each.name)
+        message += each.name
+        message += " has had an ELO change of: "
+        message += each.getELOChange(each.name)
+        message += "\n"
+    ctx.send()
+        
+
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    print('------')
+
+
+@bot.command()
+async def addplayer(ctx):
+    addPlayer(ctx.author, playerList)
+    await ctx.send(ctx.author.name + ' has been added to the leaderboard!')
+
+@bot.command()
+async def leaderboard(ctx):
+    playerListMessage = ''
+    for each in playerList:
+        playerListMessage += each.username
+        playerListMessage += str(each.elo)
+        playerListMessage += "\n"
+    
+    await ctx.send(playerListMessage)
+@bot.command()
+async def startgame(ctx):
+    match = elo.ELOMatch()
+    await ctx.send("Game has been started! Have fun (I don't recall saying good luck)")
+
+@bot.command()
+async def reportgame(ctx, place):
+    if matchPlayers == 1: ## TODO FIRST TIME FIX VARIABLE
+        endGame(match, ctx)
+    else:
+        reportGame(ctx.author, place, playerList)
+        await ctx.send(ctx.author.name + " has reported " + place)
+        matchPlayers += 1
+
+bot.run(token['BOT_TOKEN'])
