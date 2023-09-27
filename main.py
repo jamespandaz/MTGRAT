@@ -79,6 +79,8 @@ def getRank(ctx, player, playerList):
                 rank = "Rakdos, Lord of Riots"
             elif int(each.elo) > 600:
                 rank = "Drizzt Do'Urden"
+            else:
+                rank = "i couldnt be bothered to think of more names, this elo is so low i didnt think anyone would see this"
         return rank
             
 
