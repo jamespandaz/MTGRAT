@@ -132,7 +132,7 @@ async def setgameswon(ctx, player, matchesWon):
         await ctx.send("Nice try bucko. I see what ya tryna do there.")
 
 @bot.command()
-async def setgameswon(ctx, player, matchesPlayed):
+async def setgamesplayed(ctx, player, matchesPlayed):
     if ctx.author.name == "poshpanda__":
         for each in playerList:
             if each.username == player:
