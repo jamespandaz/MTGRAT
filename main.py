@@ -64,9 +64,10 @@ async def on_ready():
 async def register(ctx):
     addPlayer(ctx.author, playerList)
     await ctx.send(ctx.author.name + ' has been added to the leaderboard!')
-
+    
+# TODO add a silly little ranking system in here with stupid made up ranks like in cs?
 @bot.command()
-async def leaderboard(ctx):
+async def leaderboard(ctx): # TODO prob could put this into a function or maybe not cos like lmao variable scopes
     leaderboard = sorted(playerList, key=lambda x: x.elo, reverse=True)
     playerListMessage = ''
     playerRanking = 1
@@ -79,10 +80,6 @@ async def leaderboard(ctx):
         playerListMessage += "\n"
     
     await ctx.send(playerListMessage)
-
-@bot.command()
-async def bozo(ctx):
-   await ctx.send("Jack has been selected as the Bozo!!!! :D")
 
 @bot.command()
 async def startgame(ctx):
@@ -101,9 +98,16 @@ async def endgame(ctx):
     match.clearMatch()
     await ctx.send("Game has been ended! f10 + n noob!")
 
+# TODO add a myprofile command with stats on how many times placings have been achieved? and things such as matches played, win, yada yada yada
+
+# -- SILLY LITTLE COMMANDS -- #
 @bot.command()
 async def yourmum(ctx):
     await ctx.send("https://media.tenor.com/usLxd9BU6ugAAAAM/walmuartdiscord.gif")
+
+@bot.command()
+async def bozo(ctx):
+   await ctx.send("Jack has been selected as the Bozo!!!! :D")
 
 @bot.command()
 async def helpmeratman(ctx):
