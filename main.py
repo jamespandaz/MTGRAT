@@ -37,9 +37,6 @@ def reportPlacing(player, place, playerList):
             print(each)
 
 def addPlayer(player, playerList):
-    for each in playerList:
-        if player.id == each.userID:
-            return
     playerList.append(Player(player.id, player.name, 1500, 0, 0))
 
 def endGame(ctx, match):
@@ -111,6 +108,10 @@ async def on_ready():
 ## -- COMMANDS -- ##
 @bot.command()
 async def register(ctx):
+    for each in playerList:
+        if ctx.author.id == each.userID:
+            await ctx.send("You have already registered!")
+            return
     addPlayer(ctx.author, playerList)
     await ctx.send(ctx.author.name + ' has been added to the leaderboard!')
 
