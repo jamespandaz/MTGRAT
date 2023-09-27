@@ -52,6 +52,42 @@ def endGame(ctx, match):
                 each.elo = match.getELO(currentPlayers.name)
     
     return message
+
+def getLeaderboard(ctx, playerList):
+    leaderboard = sorted(playerList, key=lambda x: x.elo, reverse=True)
+    playerListMessage = ''
+    rank = ''
+    playerRanking = 1
+    for each in leaderboard:
+        if each.elo > 2500:
+            rank = "Black Lotus"
+        elif each.elo > 2300:
+            rank = "Sol Ring"
+        elif each.elo > 2000:
+            rank = "The Ur-Dragon"
+        elif each.elo > 1800:
+            rank = "Yuriko, the Tiger's Shadow"
+        elif each.elo > 1500:
+            rank = "Krenko, Mob Boss"
+        elif each.elo > 1200:
+            rank = "Nekusar, the Mindrazer"
+        elif each.elo > 1000:
+            rank = "Rin and Seri, Inseparable"
+        elif each.elo > 800:
+            rank = "Rakdos, Lord of Riots"
+        elif each.elo > 600:
+            rank = "Drizzt Do'Urden"
+        
+        playerListMessage += str(playerRanking)
+        playerListMessage += ". "
+        playerListMessage += str(ctx.guild.get_member_named(each.username).global_name)
+        playerListMessage += " | ELO:  "
+        playerListMessage += str(each.elo)
+        playerListMessage += " | Rank: "
+        playerListMessage += str(rank)
+        playerListMessage += "\n"
+    
+    return playerListMessage
         
 
 @bot.event
@@ -65,21 +101,10 @@ async def register(ctx):
     addPlayer(ctx.author, playerList)
     await ctx.send(ctx.author.name + ' has been added to the leaderboard!')
     
-# TODO add a silly little ranking system in here with stupid made up ranks like in cs?
+
 @bot.command()
-async def leaderboard(ctx): # TODO prob could put this into a function or maybe not cos like lmao variable scopes
-    leaderboard = sorted(playerList, key=lambda x: x.elo, reverse=True)
-    playerListMessage = ''
-    playerRanking = 1
-    for each in leaderboard:
-        playerListMessage += str(playerRanking)
-        playerListMessage += ". "
-        playerListMessage += str(ctx.guild.get_member_named(each.username).global_name)
-        playerListMessage += " | ELO:  "
-        playerListMessage += str(each.elo)
-        playerListMessage += "\n"
-    
-    await ctx.send(playerListMessage)
+async def leaderboard(ctx):   
+    await ctx.send(getLeaderboard(ctx, playerList))
 
 @bot.command()
 async def startgame(ctx):
@@ -108,6 +133,10 @@ async def yourmum(ctx):
 @bot.command()
 async def bozo(ctx):
    await ctx.send("Jack has been selected as the Bozo!!!! :D")
+
+@bot.command()
+async def isjackallergictobees(ctx):
+    await ctx.send("Yes")
 
 @bot.command()
 async def helpmeratman(ctx):
