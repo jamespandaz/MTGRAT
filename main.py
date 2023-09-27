@@ -120,7 +120,26 @@ async def setelo(ctx, player, elo):
                 await ctx.send(player + "'s elo has been set to " + str(elo))
     else:
         await ctx.send("Nice try bucko. I see what ya tryna do there.")
-    
+
+@bot.command()
+async def setgameswon(ctx, player, matchesWon):
+    if ctx.author.name == "poshpanda__":
+        for each in playerList:
+            if each.username == player:
+                each.matchesWon = matchesWon
+                await ctx.send(player + "'s matches won has been set to " + str(matchesWon))
+    else:
+        await ctx.send("Nice try bucko. I see what ya tryna do there.")
+
+@bot.command()
+async def setgameswon(ctx, player, matchesPlayed):
+    if ctx.author.name == "poshpanda__":
+        for each in playerList:
+            if each.username == player:
+                each.matchesPlayed = matchesPlayed
+                await ctx.send(player + "'s matches played has been set to " + str(matchesPlayed))
+    else:
+        await ctx.send("Nice try bucko. I see what ya tryna do there.")
 
 @bot.command()
 async def leaderboard(ctx):   
