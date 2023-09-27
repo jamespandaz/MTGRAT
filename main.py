@@ -37,6 +37,9 @@ def reportPlacing(player, place, playerList):
             print(each)
 
 def addPlayer(player, playerList):
+    for each in playerList:
+        if player.id == each.userID:
+            return
     playerList.append(Player(player.id, player.name, 1500, 0, 0))
 
 def endGame(ctx, match):
@@ -186,7 +189,7 @@ async def myprofile(ctx):
             if each.matchesPlayed == 0:
                 message += "Win Rate: 0%" + "\n"
             else:
-                message += "Win Rate: " + str(100*(each.matchesWon/each.matchesPlayed))[:5] + "%" + "\n"
+                message += "Win Rate: " + str(100*(int(each.matchesWon)/int(each.matchesPlayed)))[:5] + "%" + "\n"
             await ctx.send(message)
 
 # -- SILLY LITTLE COMMANDS -- #
