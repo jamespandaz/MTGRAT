@@ -1,6 +1,7 @@
 # This example requires the 'members' and 'message_content' privileged intents to function.
 import discord
 from discord.ext import commands
+import random
 import yaml
 import elo
 
@@ -34,7 +35,6 @@ def reportPlacing(player, place, playerList):
     for each in playerList:
         if player == each.userID:
             match.addPlayer(each.username, place, each.elo)
-            print(each)
 
 def addPlayer(player, playerList):
     playerList.append(Player(player.id, player.name, 1500, 0, 0))
@@ -158,9 +158,8 @@ async def startgame(ctx):
 
 @bot.command()
 async def reportplacing(ctx, place):
-    print(ctx.author)
     reportPlacing(ctx.author.id, place, playerList)
-    if place == 1:
+    if place == '1':
         for each in playerList:
             if ctx.author.id == each.userID:
                 each.matchesWon += 1
@@ -202,7 +201,8 @@ async def yourmum(ctx):
 
 @bot.command()
 async def bozo(ctx):
-   await ctx.send("Jack has been selected as the Bozo!!!! :D")
+   randomplayer = random.choice(ctx.guild.members)
+   await ctx.send(randomplayer.mention + "has been selected as the Bozo!!!! :D")
 
 @bot.command()
 async def isjackallergictobees(ctx):
