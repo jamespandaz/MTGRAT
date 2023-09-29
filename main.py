@@ -23,12 +23,13 @@ gameEndTime = 0
 
 # -- PLAYER CLASS -- ##
 class Player:
-    def __init__(self, userID, username, elo, matchesPlayed, matchesWon):
+    def __init__(self, userID, username, elo, matchesPlayed, matchesWon, rank):
         self.username = username
         self.userID = userID
         self.elo = elo
         self.matchesPlayed = matchesPlayed
         self.matchesWon = matchesWon
+        self.rank = rank
 
 ## -- ACUTAL FUNCTIONS FOR COMMANDS -- ##
 def reportPlacing(player, place, playerList):
@@ -37,7 +38,7 @@ def reportPlacing(player, place, playerList):
             match.addPlayer(each.username, place, each.elo)
 
 def addPlayer(player, playerList):
-    playerList.append(Player(player.id, player.name, 1500, 0, 0))
+    playerList.append(Player(player.id, player.name, 1500, 0, 0, ''))
 
 def endGame(ctx, match):
     message = ''
@@ -57,8 +58,9 @@ def endGame(ctx, match):
 
 def getRank(ctx, player, playerList):
     rank = ''
+    print(player)
     for each in playerList:
-        if player == each.userID:
+        if player.userID == each.userID:
             if int(each.elo) > 2700:
                 rank = "The One Ring"
             elif int(each.elo) > 2500:
@@ -81,11 +83,13 @@ def getRank(ctx, player, playerList):
                 rank = "Drizzt Do'Urden"
             else:
                 rank = "i couldnt be bothered to think of more names, this elo is so low i didnt think anyone would see this"
-        return rank
+        print(str(rank))
+        player.rank = rank
+        return
             
 
 def getLeaderboard(ctx, playerList):
-    leaderboard = sorted(playerList, key=lambda x: x.elo, reverse=True)
+    leaderboard = sorted(playerList, key=lambda x: int(x.elo), reverse=True)
     playerListMessage = ''
     playerRanking = 1
     for each in leaderboard:
@@ -95,7 +99,8 @@ def getLeaderboard(ctx, playerList):
         playerListMessage += " | ELO:  "
         playerListMessage += str(each.elo)
         playerListMessage += " | Rank: "
-        playerListMessage += str(getRank(ctx, each.userID, playerList))
+        getRank(ctx, each, playerList)
+        playerListMessage += str(each.rank)
         playerListMessage += "\n"
         playerRanking += 1
     
@@ -187,7 +192,8 @@ async def myprofile(ctx):
             message += "Matches Won: " + str(each.matchesWon) + "\n"
             message += "Matches Played: " + str(each.matchesPlayed) + "\n"
             message += "ELO: " + str(each.elo) + "\n"
-            message += "Rank: " + str(getRank(ctx, each.userID, playerList)) + "\n"
+            getRank(ctx, each, playerList)
+            message += "Rank: " + str(each.rank) + "\n"
             if each.matchesPlayed == 0:
                 message += "Win Rate: 0%" + "\n"
             else:
