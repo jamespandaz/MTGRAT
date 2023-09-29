@@ -83,9 +83,9 @@ def getRank(ctx, player, playerList):
                 rank = "Drizzt Do'Urden"
             else:
                 rank = "i couldnt be bothered to think of more names, this elo is so low i didnt think anyone would see this"
-        print(str(rank))
-        player.rank = rank
-        return
+            print(str(rank))
+            each.rank = rank
+            return
             
 
 def getLeaderboard(ctx, playerList):
@@ -199,6 +199,14 @@ async def myprofile(ctx):
             else:
                 message += "Win Rate: " + str(100*(int(each.matchesWon)/int(each.matchesPlayed)))[:5] + "%" + "\n"
             await ctx.send(message)
+
+@bot.command()
+async def clearlist(ctx):
+    if ctx.author.name == "poshpanda__":
+        playerList.clear()
+        await ctx.send("Player list has been cleared")
+    else:
+        await ctx.send("Nice try bucko. I see what ya tryna do there.")
 
 # -- SILLY LITTLE COMMANDS -- #
 @bot.command()
