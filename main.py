@@ -22,6 +22,7 @@ gameStartTime = 0
 gameEndTime = 0
 
 # -- PLAYER CLASS -- ##
+#TODO: maybe add an elo history so player can call !elohistory to see a graph of their elo over time
 class Player:
     def __init__(self, userID, username, elo, matchesPlayed, matchesWon, rank):
         self.username = username
@@ -30,6 +31,14 @@ class Player:
         self.matchesPlayed = matchesPlayed
         self.matchesWon = matchesWon
         self.rank = rank
+
+# -- MATCH CLASS --##
+#TODO: maybe add a match history and can call !matchhistory to see the last 10 games or something
+#TODO: could maybe add commander info so we can see what decks are winning the most/wins over time
+
+# -- MATCH CLASS --##
+#TODO: maybe add a match history and can call !matchhistory to see the last 10 games or something
+#TODO: could maybe add commander info so we can see what decks are winning the most/wins over time
 
 ## -- ACUTAL FUNCTIONS FOR COMMANDS -- ##
 def reportPlacing(player, place, playerList):
@@ -61,33 +70,39 @@ def getRank(ctx, player, playerList):
     print(player)
     for each in playerList:
         if player.userID == each.userID:
-            if int(each.elo) > 2700:
+            if int(each.elo) > 1750:
                 rank = "The One Ring"
-            elif int(each.elo) > 2500:
+            elif int(each.elo) > 1700:
                 rank = "Black Lotus"
-            elif int(each.elo) > 2300:
+            elif int(each.elo) > 1650:
                 rank = "Sol Ring"
-            elif int(each.elo) > 2000:
+            elif int(each.elo) > 1600:
                 rank = "The Ur-Dragon"
-            elif int(each.elo) > 1800:
+            elif int(each.elo) > 1550:
                 rank = "Yuriko, the Tiger's Shadow"
             elif int(each.elo) > 1500:
                 rank = "Krenko, Mob Boss"
-            elif int(each.elo) > 1200:
+            elif int(each.elo) > 1450:
                 rank = "Nekusar, the Mindrazer"
-            elif int(each.elo) > 1000:
+            elif int(each.elo) > 1400:
                 rank = "Rin and Seri, Inseparable"
-            elif int(each.elo) > 800:
+            elif int(each.elo) > 1350:
                 rank = "Rakdos, Lord of Riots"
-            elif int(each.elo) > 600:
+            elif int(each.elo) > 1300:
                 rank = "Drizzt Do'Urden"
+            elif int(each.elo) > 1250:
+                rank = "Salruf, Realm Eater"
+            elif int(each.elo) > 1200:
+                rank = "Basic Land (it's a cool printing at least)"
+            elif int(each.elo) > 1150:
+                rank = "Plains"
             else:
                 rank = "i couldnt be bothered to think of more names, this elo is so low i didnt think anyone would see this"
             print(str(rank))
             each.rank = rank
             return
             
-
+#TODO: maybe everytime leaderboard gets called it saves the leaderboard to a file so it gets backed up incase of a crash
 def getLeaderboard(ctx, playerList):
     leaderboard = sorted(playerList, key=lambda x: int(x.elo), reverse=True)
     playerListMessage = ''
@@ -121,36 +136,6 @@ async def register(ctx):
             return
     addPlayer(ctx.author, playerList)
     await ctx.send(ctx.author.name + ' has been added to the leaderboard!')
-
-@bot.command()
-async def setelo(ctx, player, elo):
-    if ctx.author.name == "poshpanda__":
-        for each in playerList:
-            if each.username == player:
-                each.elo = elo
-                await ctx.send(player + "'s elo has been set to " + str(elo))
-    else:
-        await ctx.send("Nice try bucko. I see what ya tryna do there.")
-
-@bot.command()
-async def setgameswon(ctx, player, matchesWon):
-    if ctx.author.name == "poshpanda__":
-        for each in playerList:
-            if each.username == player:
-                each.matchesWon = matchesWon
-                await ctx.send(player + "'s matches won has been set to " + str(matchesWon))
-    else:
-        await ctx.send("Nice try bucko. I see what ya tryna do there.")
-
-@bot.command()
-async def setgamesplayed(ctx, player, matchesPlayed):
-    if ctx.author.name == "poshpanda__":
-        for each in playerList:
-            if each.username == player:
-                each.matchesPlayed = matchesPlayed
-                await ctx.send(player + "'s matches played has been set to " + str(matchesPlayed))
-    else:
-        await ctx.send("Nice try bucko. I see what ya tryna do there.")
 
 @bot.command()
 async def leaderboard(ctx):   
@@ -205,6 +190,52 @@ async def clearlist(ctx):
     if ctx.author.name == "poshpanda__":
         playerList.clear()
         await ctx.send("Player list has been cleared")
+    else:
+        await ctx.send("Nice try bucko. I see what ya tryna do there.")
+
+# -- ADMIN COMMANDS -- #
+@bot.command()
+async def backup(ctx):
+    for each in playerList:
+        print(str(each))
+
+    ctx.send("Check console for player list")
+
+@bot.command()
+async def clearlist(ctx):
+    if ctx.author.name == "poshpanda__":
+        playerList.clear()
+        await ctx.send("Player list has been cleared")
+    else:
+        await ctx.send("Nice try bucko. I see what ya tryna do there.")
+
+@bot.command()
+async def setelo(ctx, player, elo):
+    if ctx.author.name == "poshpanda__":
+        for each in playerList:
+            if each.username == player:
+                each.elo = elo
+                await ctx.send(player + "'s elo has been set to " + str(elo))
+    else:
+        await ctx.send("Nice try bucko. I see what ya tryna do there.")
+
+@bot.command()
+async def setgameswon(ctx, player, matchesWon):
+    if ctx.author.name == "poshpanda__":
+        for each in playerList:
+            if each.username == player:
+                each.matchesWon = matchesWon
+                await ctx.send(player + "'s matches won has been set to " + str(matchesWon))
+    else:
+        await ctx.send("Nice try bucko. I see what ya tryna do there.")
+
+@bot.command()
+async def setgamesplayed(ctx, player, matchesPlayed):
+    if ctx.author.name == "poshpanda__":
+        for each in playerList:
+            if each.username == player:
+                each.matchesPlayed = matchesPlayed
+                await ctx.send(player + "'s matches played has been set to " + str(matchesPlayed))
     else:
         await ctx.send("Nice try bucko. I see what ya tryna do there.")
 
