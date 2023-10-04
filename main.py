@@ -194,12 +194,18 @@ async def clearlist(ctx):
         await ctx.send("Nice try bucko. I see what ya tryna do there.")
 
 # -- ADMIN COMMANDS -- #
+# TODO: use pickle to save a backup of player list for backup
 @bot.command()
 async def backup(ctx):
     for each in playerList:
         print(str(each))
 
     ctx.send("Check console for player list")
+
+# TODO: use pickle to reload a backup of player list
+@bot.command()
+async def restore(ctx):
+    ctx.send("Not implemented yet, ya silly goose")
 
 @bot.command()
 async def clearlist(ctx):
