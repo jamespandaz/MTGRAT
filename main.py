@@ -18,8 +18,7 @@ bot = commands.Bot(command_prefix='!', description=description, intents=intents)
 playerList = [] # intiallise player list (hope you dont have to restart the bot!!!)
 match = elo.ELOMatch()
 matchPlayers = 0
-gameStartTime = 0
-gameEndTime = 0
+packsOpened = 0 # maybe pickle this as well so it doesnt reset on restart
 
 # -- PLAYER CLASS -- ##
 #TODO: maybe add an elo history so player can call !elohistory to see a graph of their elo over time
@@ -70,7 +69,9 @@ def getRank(ctx, player, playerList):
     print(player)
     for each in playerList:
         if player.userID == each.userID:
-            if int(each.elo) > 1750:
+            if int(each.elo) > 1800:
+                rank = "Felidar Retreat"
+            elif int(each.elo) > 1750:
                 rank = "The One Ring"
             elif int(each.elo) > 1700:
                 rank = "Black Lotus"
@@ -249,6 +250,13 @@ async def setgamesplayed(ctx, player, matchesPlayed):
 @bot.command()
 async def yourmum(ctx):
     await ctx.send("https://media.tenor.com/usLxd9BU6ugAAAAM/walmuartdiscord.gif")
+
+#TODO: Make sure you test this
+@bot.command()
+async def openpack(ctx):
+    packsOpened += 1
+    await ctx.send("It's rippin time, imma rip all over the whole room")
+    await ctx.send("Total amount of packs ripped: " + str(packsOpened))
 
 @bot.command()
 async def bozo(ctx):
