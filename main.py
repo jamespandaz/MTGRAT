@@ -263,10 +263,11 @@ async def isjackallergictobees(ctx):
 async def helpmeratman(ctx):
     await ctx.send("\
 1. run !register to register yourself to the leaderboard (only need to do this once) \n \
-2. run !startgame to start a game (only one person needs to do this) \n \
-3. run !reportplacing <place> to report your place in the game (eg. !reportgame 2 to report 2nd place) \n \
+2. run !startgame to start a game (only one person needs to do this, and you can only have one match running at once) \n \
+3. run !reportplacing <place> to report your place in the game (eg. !reportgame 2 to report 2nd place, everyone needs to do this) \n \
 4. run !endgame to end the game and update the leaderboard (only one person needs to run this) \n \
 Use !bozo to select a bozo \n \
-Use !leaderboard to see the leaderboard \n")
+Use !leaderboard to see the leaderboard \n\
+Use !myprofile to see your profile \n")
 
 bot.run(token['DEV_BOT_TOKEN'])
