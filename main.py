@@ -14,6 +14,7 @@ intents.members = True
 intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', description=description, intents=intents)
+
 ## -- VARIABLES INIT PROB A BAD IDEA -- ## 
 playerList = [] # intiallise player list (hope you dont have to restart the bot!!!)
 match = elo.ELOMatch()
@@ -166,7 +167,7 @@ async def reportplacing(ctx, place):
 async def endgame(ctx):
     await ctx.send(endGame(ctx, match))
     match.clearMatch()
-    await ctx.send("Game has been ended! f10 + n noob!")
+    await ctx.send("Game has been ended! UNPLUG YO CONTROLLER DAWG")
 
 @bot.command()
 async def myprofile(ctx):
