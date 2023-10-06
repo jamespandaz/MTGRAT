@@ -1,6 +1,7 @@
 # This example requires the 'members' and 'message_content' privileged intents to function.
 import discord
 from discord.ext import commands
+from peewee import *
 import random
 import yaml
 import elo
@@ -14,6 +15,7 @@ intents.members = True
 intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', description=description, intents=intents)
+db = SqliteDatabase('mtgrat.db')
 
 ## -- VARIABLES INIT PROB A BAD IDEA -- ## 
 playerList = [] # intiallise player list (hope you dont have to restart the bot!!!)
@@ -23,7 +25,7 @@ packsOpened = 0 # maybe pickle this as well so it doesnt reset on restart
 
 # -- PLAYER CLASS -- ##
 #TODO: maybe add an elo history so player can call !elohistory to see a graph of their elo over time
-class Player:
+class oldPlayer:
     def __init__(self, userID, username, elo, matchesPlayed, matchesWon, rank):
         self.username = username
         self.userID = userID
@@ -31,6 +33,32 @@ class Player:
         self.matchesPlayed = matchesPlayed
         self.matchesWon = matchesWon
         self.rank = rank
+
+    class Meta:
+        database = db
+
+class Player(Model):
+    username = CharField()
+    userID = IntegerField()
+    elo = IntegerField()
+    matchesPlayed = IntegerField()
+    matchesWon = IntegerField()
+    rank = IntegerField()
+
+    class Meta:
+        database = db
+
+    def __str__(self):
+        return str(self.username) + " " + str(self.userID) + " " + str(self.elo) + " " + str(self.matchesPlayed) + " " + str(self.matchesWon) + " " + str(self.rank)
+
+class Match(Model):
+    matchID = IntegerField()
+    playerID = ForeignKeyField(Player, backref='matches')
+    place = IntegerField()
+    elo = IntegerField()
+
+    class Meta:
+        database = db
 
 # -- MATCH CLASS --##
 #TODO: maybe add a match history and can call !matchhistory to see the last 10 games or something
@@ -47,7 +75,9 @@ def reportPlacing(player, place, playerList):
             match.addPlayer(each.username, place, each.elo)
 
 def addPlayer(player, playerList):
-    playerList.append(Player(player.id, player.name, 1500, 0, 0, ''))
+    newPlayer = Player(username=player.name, userID=player.id, elo=1500, matchesPlayed=0, matchesWon=0, rank='')
+    newPlayer.save()
+    #playerList.append(Player(player.id, player.name, 1500, 0, 0, ''))
 
 def endGame(ctx, match):
     message = ''
@@ -127,9 +157,23 @@ def getLeaderboard(ctx, playerList):
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
-    print('------')
+    db.connect()
+    print("Database is connected!")
 
 ## -- COMMANDS -- ##
+@bot.command()
+async def createtables(ctx):
+    if ctx.author.name == "poshpanda__":
+        db.create_tables([Player])
+        await ctx.send("Tables have been created")
+    else:
+        await ctx.send("Nice try bucko. I see what ya tryna do there.")
+
+@bot.command()
+async def amiin(ctx):
+    player = Player.get(Player.userID == ctx.author.id)
+    await ctx.send(player.__str__())
+
 @bot.command()
 async def register(ctx):
     for each in playerList:
@@ -186,14 +230,6 @@ async def myprofile(ctx):
             else:
                 message += "Win Rate: " + str(100*(int(each.matchesWon)/int(each.matchesPlayed)))[:5] + "%" + "\n"
             await ctx.send(message)
-
-@bot.command()
-async def clearlist(ctx):
-    if ctx.author.name == "poshpanda__":
-        playerList.clear()
-        await ctx.send("Player list has been cleared")
-    else:
-        await ctx.send("Nice try bucko. I see what ya tryna do there.")
 
 # -- ADMIN COMMANDS -- #
 # TODO: use pickle to save a backup of player list for backup
