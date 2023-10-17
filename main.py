@@ -210,7 +210,7 @@ async def leaderboard(ctx):
 async def yourmum(ctx):
     await ctx.send("https://media.tenor.com/usLxd9BU6ugAAAAM/walmuartdiscord.gif")
 
-#TODO: Make sure you test this
+#TODO: Make sure you test this, update it doesnt work lmao
 @bot.command()
 async def openpack(ctx):
     packsOpened += 1
