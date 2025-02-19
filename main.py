@@ -224,7 +224,7 @@ async def bozo(ctx):
 
 @bot.command()
 async def isjackallergictobees(ctx):
-    await ctx.send("Yes")
+    await ctx.send("No")
 
 @bot.command()
 async def helpmeratman(ctx):
